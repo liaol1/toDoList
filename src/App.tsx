@@ -1,19 +1,19 @@
-import React, { FC, useEffect, useRef, useState, Dispatch } from "react";
-import { connect } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 
-import Action from "./Store/Actions";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "./Store/rootReducer";
+import * as actions from "./Store/Task/actions";
 
-interface AppProps {
-  taskList: Array<string>;
-  dispatch: Dispatch<any>;
-}
-
-const App: FC<AppProps> = ({ taskList, dispatch }) => {
+const App = () => {
   const createInp = useRef<HTMLInputElement>(null);
   const editInput = useRef<HTMLInputElement>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
-  const [currentEditIndex, setCurrentEditIndex] = useState<number>(-1)
+  const [currentEditIndex, setCurrentEditIndex] = useState<number>(-1);
+
+  const taskState = useSelector((state: RootState) => state.taskReducer);
+  const dispatch = useDispatch();
+  const { taskList } = taskState;
 
   /**
    * creatTaskFuntcion
@@ -22,7 +22,7 @@ const App: FC<AppProps> = ({ taskList, dispatch }) => {
   const creatTask = () => {
     const value = createInp.current!.value;
     if (value) {
-      dispatch(Action.createTask(value));
+      dispatch(actions.createTask(value));
       createInp.current!.value = "";
     } else {
       alert("请先输入任务");
@@ -35,7 +35,7 @@ const App: FC<AppProps> = ({ taskList, dispatch }) => {
 
   const delTask = () => {
     if (currentIndex !== -1) {
-      dispatch(Action.delTask(currentIndex));
+      dispatch(actions.delTask(currentIndex));
       setCurrentIndex(-1);
     } else {
       alert("请先选择");
@@ -48,7 +48,7 @@ const App: FC<AppProps> = ({ taskList, dispatch }) => {
    */
 
   const editItem = (index: number) => {
-    setCurrentEditIndex(index)
+    setCurrentEditIndex(index);
   };
 
   /**
@@ -69,26 +69,31 @@ const App: FC<AppProps> = ({ taskList, dispatch }) => {
    */
 
   const editInputBlur = () => {
-    if (editInput.current!.value === '') {
-      setCurrentEditIndex(-1)
-      alert('无效修改')
-      return
+    if (editInput.current!.value === "") {
+      setCurrentEditIndex(-1);
+      alert("无效修改");
+      return;
     }
 
-    dispatch(Action.updateTask({ index: currentEditIndex, item: editInput.current!.value }))
-    setCurrentEditIndex(-1)
-  }
+    dispatch(
+      actions.updateTask({
+        index: currentEditIndex,
+        item: editInput.current!.value,
+      })
+    );
+    setCurrentEditIndex(-1);
+  };
 
   /**
    * currentEditIndex change
    */
 
   useEffect(() => {
-    if (editInput.current) {
-      editInput.current!.value = taskList[currentEditIndex]
-      editInput.current.focus()
+    if (editInput.current && taskList) {
+      editInput.current!.value = taskList[currentEditIndex];
+      editInput.current.focus();
     }
-  }, [currentEditIndex])
+  }, [currentEditIndex]);
 
   return (
     <div className="App">
@@ -97,19 +102,17 @@ const App: FC<AppProps> = ({ taskList, dispatch }) => {
       <button onClick={delTask}>删除</button>
       <ul className="taskList_list">
         {taskList?.map((item: string, index: number) => (
-          <li
-            key={index}
-            onDoubleClick={() => editItem(index)}
-          >
-            {
-              currentEditIndex !== index ?
-                <p
-                  className={index === currentIndex ? "active" : ""}
-                  onClick={() => selectItem(index)}>
-                  {item}
-                </p> :
-                <input type="text" ref={editInput} onBlur={editInputBlur} />
-            }
+          <li key={index} onDoubleClick={() => editItem(index)}>
+            {currentEditIndex !== index ? (
+              <p
+                className={index === currentIndex ? "active" : ""}
+                onClick={() => selectItem(index)}
+              >
+                {item}
+              </p>
+            ) : (
+              <input type="text" ref={editInput} onBlur={editInputBlur} />
+            )}
           </li>
         ))}
       </ul>
@@ -117,8 +120,4 @@ const App: FC<AppProps> = ({ taskList, dispatch }) => {
   );
 };
 
-export default connect((state: any) => {
-  return {
-    taskList: state.TaskReducer.taskList,
-  };
-})(App);
+export default App;

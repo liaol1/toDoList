@@ -5,25 +5,25 @@
  * @lastModify li.liao 2022-6-27
  */
 
-import * as TaskConstants from "../../Constants/TaskConstants";
+import { ACTION_TYPE } from "./constants";
 
 interface CreateTaskAction {
   (payload: string): {
-    type: typeof TaskConstants.ACTION_TYPE.CREATE_NEW_TASK;
+    type: typeof ACTION_TYPE.CREATE_NEW_TASK;
     payload: string;
   };
 }
 
 interface DelTaskAction {
   (payload: number): {
-    type: typeof TaskConstants.ACTION_TYPE.DELECT_TASK;
+    type: typeof ACTION_TYPE.DELECT_TASK;
     payload: number;
   };
 }
 
 interface UpdateTaskAction {
   (payload: { item: string; index: number }): {
-    type: typeof TaskConstants.ACTION_TYPE.UPDATE_TASK;
+    type: typeof ACTION_TYPE.UPDATE_TASK;
     payload: {
       item: string;
       index: number;
@@ -31,4 +31,19 @@ interface UpdateTaskAction {
   };
 }
 
-export type { CreateTaskAction, DelTaskAction, UpdateTaskAction };
+interface TaskReducer {
+  taskList: Array<string>;
+}
+
+interface TaskActions<T, S> {
+  type: T;
+  payload: S;
+}
+
+export type {
+  CreateTaskAction,
+  DelTaskAction,
+  UpdateTaskAction,
+  TaskReducer,
+  TaskActions,
+};

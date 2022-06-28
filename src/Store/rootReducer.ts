@@ -1,15 +1,8 @@
-/**
- * @file
- * @date 2022-6-27
- * @author li.liao
- * @lastModify li.liao 2022-6-27
- */
 import { combineReducers } from "redux";
-import TaskReducer from "./TaskReducer";
+import TaskReducer from "./Task/reducer";
 
 const rootReducer = combineReducers({
-    TaskReducer,
+  taskReducer: TaskReducer,
 });
-
 export type RootState = ReturnType<typeof rootReducer>;
 export default rootReducer;
